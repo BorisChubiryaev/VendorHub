@@ -1,23 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "npm ci",
+  "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "web/dist",
-  "functions": {
-    "api/index.mjs": {
-      "maxDuration": 30,
-      "includeFiles": "{server/dist/**,node_modules/pdf-parse/lib/*.js,node_modules/pdf-parse/lib/pdf.js/v1.10.100/build/*.js}"
-    }
-  },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
     { "source": "/:path*", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
-    }
   ]
 }

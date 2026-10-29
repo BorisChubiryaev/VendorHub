@@ -1,4 +1,6 @@
-import pdfParse from 'pdf-parse/lib/pdf-parse.js';
+// pdf.js из состава pdf-parse подключаем статически (сам pdf-parse грузит его по динамическому пути,
+// который не видят сборщики serverless-функций)
+import PDFJS from 'pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js';
 import { CITIES, extractCity, extractLevel, extractRole, extractSkills, normalizeLevel, normalizeRole, normalizeSkill } from '../lib/dictionaries.js';
 import { llmJson } from './llm.js';
 
@@ -17,14 +19,32 @@ export interface ParsedResume {
   missing: string[];
 }
 
+async function extractText(buffer: Buffer): Promise<string> {
+  PDFJS.disableWorker = true;
+  const doc = await PDFJS.getDocument(new Uint8Array(buffer));
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const content = await (await doc.getPage(i)).getTextContent({ normalizeWhitespace: false, disableCombineTextItems: false });
+    let lastY: number | undefined;
+    let text = '';
+    for (const item of content.items) {
+      text += lastY === undefined || lastY === item.transform[5] ? item.str : '\n' + item.str;
+      lastY = item.transform[5];
+    }
+    pages.push(text);
+  }
+  doc.destroy();
+  return pages.join('\n\n');
+}
+
 export async function pdfToText(buffer: Buffer): Promise<string> {
-  let r;
+  let raw: string;
   try {
-    r = await pdfParse(buffer);
+    raw = await extractText(buffer);
   } catch {
     throw new Error('Не удалось прочитать PDF: файл повреждён или не является PDF');
   }
-  return r.text.replace(/\r/g, '').replace(/[ \t]+\n/g, '\n').trim();
+  return raw.replace(/\r/g, '').replace(/[ \t]+\n/g, '\n').trim();
 }
 
 const NAME_RE = /^([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ][а-яё]+)(?:\s+([А-ЯЁ][а-яё]+))?$/;

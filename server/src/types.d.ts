@@ -1,4 +1,4 @@
-declare module 'pdf-parse/lib/pdf-parse.js' {
-  function pdfParse(data: Buffer): Promise<{ text: string; numpages: number }>;
-  export default pdfParse;
+declare module 'pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js' {
+  const PDFJS: any;
+  export default PDFJS;
 }
