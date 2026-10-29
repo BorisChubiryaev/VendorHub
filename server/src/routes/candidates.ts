@@ -166,7 +166,7 @@ candidatesRouter.put('/:id', requireRole('pool_manager'), h((req) => {
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 15 * 1024 * 1024, files: 50 },
+  limits: { fileSize: config.maxUploadMb * 1024 * 1024, files: 50 },
 });
 
 /** Импорт и распознавание резюме (PDF): по каждому файлу — статус обработки и ссылка на карточку в статусе «Черновик». */

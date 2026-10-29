@@ -38,7 +38,7 @@ dictionariesRouter.get('/', h((req) => {
     routeStatuses: ROUTE_STATUSES,
     cases: CASE_INFO,
     scenarios: SCENARIOS,
-    features: { llm: llmEnabled(), backlogProvider: config.backlog.provider },
+    features: { llm: llmEnabled(), backlogProvider: config.backlog.provider, maxUploadMb: config.maxUploadMb, ephemeral: config.ephemeral },
   };
 }));
 

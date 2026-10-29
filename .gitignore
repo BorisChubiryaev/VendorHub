@@ -6,3 +6,4 @@ data/
 .env
 uploads/
 *.tsbuildinfo
+.vercel

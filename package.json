@@ -12,5 +12,5 @@
     "test": "npm test -w server",
     "typecheck": "npm run typecheck -w server && npm run typecheck -w web"
   },
-  "engines": { "node": ">=22.5" }
+  "engines": { "node": "22.x" }
 }

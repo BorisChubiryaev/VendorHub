@@ -23,7 +23,7 @@ export interface Dictionaries {
   routeStatuses: Record<string, string>;
   cases: Record<string, { title: string; action: string; banner: string; scenario: string }>;
   scenarios: Record<string, string>;
-  features: { llm: boolean; backlogProvider: string };
+  features: { llm: boolean; backlogProvider: string; maxUploadMb: number; ephemeral: boolean };
 }
 
 export interface Review { author: string; text: string; score?: number | null; date?: string }

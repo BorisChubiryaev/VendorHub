@@ -19,6 +19,9 @@ export default function ImportPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const totalMb = files.reduce((sum, f) => sum + f.size, 0) / 1024 / 1024;
+  const tooBig = totalMb > dict.features.maxUploadMb;
+
   const upload = async () => {
     setBusy(true);
     setError(null);
@@ -56,10 +59,11 @@ export default function ImportPage() {
               {dict.vendors.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
             </select>
           </Field>
-          <button className="btn btn-primary" disabled={!files.length || busy} onClick={upload}>{busy ? 'Распознаём…' : `Загрузить (${files.length})`}</button>
+          <button className="btn btn-primary" disabled={!files.length || busy || tooBig} onClick={upload}>{busy ? 'Распознаём…' : `Загрузить (${files.length})`}</button>
         </div>
         {files.length > 0 && <ul className="file-list">{files.map((f) => <li key={f.name}>{f.name} <span className="muted small">{Math.round(f.size / 1024)} КБ</span></li>)}</ul>}
       </section>
+      {tooBig && <div className="alert alert-warn">Суммарный размер файлов {totalMb.toFixed(1)} МБ — больше {dict.features.maxUploadMb} МБ за одну загрузку. Загрузите файлы частями.</div>}
       <ErrorBox error={error} />
       {results.length > 0 && (
         <section className="card">

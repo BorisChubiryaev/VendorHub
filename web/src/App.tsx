@@ -1,4 +1,5 @@
-import { Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { ROLE_NAMES, useAuth } from './auth';
 import AssistantPage from './pages/AssistantPage';
 import CandidateFormPage from './pages/CandidateFormPage';
@@ -28,12 +29,19 @@ const NAV: Record<Role, { to: string; label: string; end?: boolean }[]> = {
 export default function App() {
   const { user, role, setRole, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => setMenuOpen(false), [location.pathname]);
   if (!user) return <LoginPage />;
   const home = role === 'customer' ? '/needs' : '/pool';
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <header className="mobile-bar">
+        <div className="brand"><span className="brand-mark">VH</span><span>ВендорХаб</span></div>
+        <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>{menuOpen ? '✕ Закрыть' : '☰ Меню'}</button>
+      </header>
+      <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
         <div className="brand">
           <span className="brand-mark">VH</span>
           <span>ВендорХаб</span>

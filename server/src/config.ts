@@ -1,11 +1,19 @@
 import path from 'node:path';
 
 const env = process.env;
+// На Vercel файловая система доступна на запись только в /tmp и живёт, пока жив экземпляр функции
+const isVercel = !!env.VERCEL;
+const dataDir = isVercel ? '/tmp/vendorhub' : path.resolve(process.cwd(), 'data');
 
 export const config = {
   port: Number(env.PORT ?? 3000),
-  dbPath: env.DB_PATH ?? path.resolve(process.cwd(), 'data', 'vendorhub.db'),
-  uploadDir: env.UPLOAD_DIR ?? path.resolve(process.cwd(), 'data', 'uploads'),
+  isVercel,
+  /** Данные не сохраняются между перезапусками (демо-стенд на Vercel без внешней БД). */
+  ephemeral: (env.EPHEMERAL_DATA ?? String(isVercel)) === 'true',
+  dbPath: env.DB_PATH ?? path.join(dataDir, 'vendorhub.db'),
+  uploadDir: env.UPLOAD_DIR ?? path.join(dataDir, 'uploads'),
+  // Vercel ограничивает тело запроса 4,5 МБ
+  maxUploadMb: Number(env.MAX_UPLOAD_MB ?? (isVercel ? 4 : 15)),
   webDist: env.WEB_DIST ?? path.resolve(process.cwd(), '..', 'web', 'dist'),
   jwtSecret: env.JWT_SECRET ?? 'vendorhub-dev-secret-change-me',
   jwtTtl: env.JWT_TTL ?? '12h',

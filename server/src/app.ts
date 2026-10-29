@@ -13,7 +13,7 @@ export function createApp() {
   app.disable('x-powered-by');
   app.use(express.json({ limit: '2mb' }));
 
-  app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+  app.get('/api/health', (_req, res) => res.json({ status: 'ok', ephemeral: config.ephemeral }));
   app.use('/api/auth', authRouter);
   app.use('/api/integrations', integrationsRouter);
   app.use('/api/dictionaries', requireAuth, dictionariesRouter);
